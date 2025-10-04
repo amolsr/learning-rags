@@ -3,3 +3,6 @@ langchain-ollama>=0.1.0
 langchain-community>=0.0.20
 clickhouse-connect>=0.6.0
 ollama>=0.1.0
+fastapi
+uvicorn[standard]
+pydantic
