@@ -1,0 +1,19 @@
+var contract = eth.contract(<CONTENTS_OF_ABI_FILE>)
+
+personal.unlockAccount(eth.coinbase)
+
+var contractTransaction = contract.new({
+from: eth.coinbase,
+data: "0x<CONTENTS_OF_BIN_FILE>"
+value: 0,
+gas: 1000000,
+},
+function(err, contract){
+if(err){
+console.error(err)
+}
+else{
+console.log(contract);
+console.log(contract.address);
+}
+});

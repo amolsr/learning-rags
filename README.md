@@ -1,16 +1,50 @@
-# My Personal RAG Learning Repo
+# RAG Project - Retrieval-Augmented Generation System
 
-This repository contains my notes, experiments, and code while learning **Retrieval-Augmented Generation (RAG)**.  
+A modular and extensible RAG implementation with support for multiple LLM backends, vector databases, and document processing pipelines.
 
-## Contents
-- Roadmap for learning RAG  
-- Simple RAG pipeline examples (Ollama + ClickHouse)  
-- Practice projects and experiments  
+## Project Structure
 
-## Goals
-- Understand embeddings, vector databases, and retrievers  
-- Build small RAG prototypes with local and hosted LLMs  
-- Document my learning journey
+```
+rag_project/
+├── data/
+│   ├── raw/                 # Raw documents (PDFs, CSVs, text)
+│   ├── processed/           # Cleaned/processed data for embedding
+│   └── embeddings/          # Vector embeddings stored as files (optional)
+│
+├── src/
+│   ├── __init__.py
+│   ├── config.py            # Configs like API keys, paths, DB settings
+│   ├── preprocess.py        # Data cleaning and text preprocessing
+│   ├── embeddings.py        # Code to generate embeddings (e.g., OpenAI, HuggingFace)
+│   ├── retriever.py         # Vector DB queries, FAISS, Pinecone, Weaviate
+│   ├── generator.py         # LLM interface for generation (OpenAI, Llama, etc.)
+│   ├── rag_pipeline.py      # Integrates retriever + generator
+│   └── utils.py             # Helper functions (logging, metrics, etc.)
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb
+│   └── 02_rag_demo.ipynb
+│
+├── scripts/
+│   ├── ingest_data.py       # Script to load and preprocess documents
+│   ├── run_rag.py           # CLI for running RAG queries
+│   ├── server.py            # FastAPI server for RAG system
+│   └── test_rag.py          # Test script for debugging
+│
+├── requirements.txt         # Python dependencies
+├── README.md
+└── env.template             # Environment variables template
+```
+
+## Features
+
+- **Modular Architecture**: Clean separation of concerns with configurable components
+- **Multiple LLM Support**: Ollama, OpenAI, HuggingFace models
+- **Vector Database Support**: ClickHouse, FAISS (extensible for Pinecone, Weaviate)
+- **Document Processing**: Automatic text cleaning, chunking, and preprocessing
+- **Question Generation**: Generate multiple-choice questions from your content
+- **Interactive Interface**: CLI and web API interfaces
+- **Jupyter Notebooks**: Data exploration and demonstration notebooks
 
 ## Quick Start
 
@@ -35,35 +69,79 @@ This repository contains my notes, experiments, and code while learning **Retrie
    pip install -r requirements.txt
    ```
 
+### Configuration
+
+1. **Copy environment template**:
+   ```bash
+   cp env.template .env
+   ```
+
+2. **Edit `.env` file** with your configuration:
+   ```bash
+   # ClickHouse settings
+   CLICKHOUSE_HOST=localhost
+   CLICKHOUSE_PORT=8123
+   CLICKHOUSE_USER=default
+   CLICKHOUSE_PASSWORD=your_password
+   CLICKHOUSE_DATABASE=rag_db
+   
+   # Ollama settings
+   OLLAMA_MODEL=mistral
+   OLLAMA_TEMPERATURE=0.0
+   ```
+
 ### Running the RAG System
 
 1. **Test the setup**:
    ```bash
-   python test_rag.py
+   python scripts/test_rag.py
    ```
 
-2. **Run the RAG system**:
+2. **Ingest your documents**:
    ```bash
-   python simple_rag.py
+   python scripts/ingest_data.py
    ```
 
-### Configuration
+3. **Run interactive RAG**:
+   ```bash
+   python scripts/run_rag.py
+   ```
 
-The system uses environment variables for ClickHouse configuration:
+4. **Start the web API server**:
+   ```bash
+   python scripts/server.py
+   ```
 
+5. **Explore with Jupyter notebooks**:
+   ```bash
+   jupyter notebook notebooks/
+   ```
+
+### Usage Examples
+
+#### Command Line Interface
 ```bash
-export CLICKHOUSE_HOST="localhost"
-export CLICKHOUSE_PORT="8123"
-export CLICKHOUSE_USER="default"
-export CLICKHOUSE_PASSWORD="your_password"
-export CLICKHOUSE_DATABASE="rag_db"
+# Interactive mode
+python scripts/run_rag.py
+
+# Single question
+python scripts/run_rag.py --mode question --question "What is blockchain?"
+
+# Generate questions
+python scripts/run_rag.py --mode generate --num-questions 10
 ```
 
-If not set, the system will prompt for these values interactively.
+#### Web API
+```bash
+# Start server
+python scripts/server.py
 
-### Features
+# Test API
+curl -X POST "http://localhost:8000/ask" \
+     -H "Content-Type: application/json" \
+     -d '{"text": "What is blockchain?"}'
+```
 
-- **Document Processing**: Automatically loads and chunks markdown files from the `Notes/` directory
-- **Vector Storage**: Uses ClickHouse for efficient vector similarity search
-- **Question Generation**: Can generate multiple-choice questions from your content
-- **Interactive Q&A**: Ask questions about your documents  
+#### Jupyter Notebooks
+- `01_data_exploration.ipynb`: Explore your data and preprocessing pipeline
+- `02_rag_demo.ipynb`: Interactive RAG demonstrations and testing  

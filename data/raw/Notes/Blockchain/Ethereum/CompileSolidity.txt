@@ -1,0 +1,6 @@
+solc --abi Contract.sol 
+solc --bin Contract.sol
+
+//saving to file
+solc --abi Contract.sol > Contract.abi
+solc --bin Contract.sol > Contract.bin

@@ -1,0 +1,16 @@
+//Calling Function via .sendTransaction
+
+web3.sha3("<FUNTION NAME WITH FORMAL DEFINITION>")
+"0x7afbe4f1c55b5f72ea356f5b4d5615831867af31454a5ca5557f315e6d11a369"
+
+var addData = "0x7afbe4f100000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000003"
+
+personal.unlockAccount(eth.coinbase)
+
+eth.sendTransaction({
+from: eth.coinbase,
+data: addData,
+to: contractAddress,
+gas: 90000,
+gasPrice: 20000000000
+});

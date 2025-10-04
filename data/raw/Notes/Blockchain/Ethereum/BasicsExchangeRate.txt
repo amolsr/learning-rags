@@ -1,0 +1,1 @@
+gas price decide the gas to ether exchange rate         gwei = 2X10^-8 ether

@@ -1,0 +1,25 @@
+name: Deploy master
+on:
+  push:
+    branches:
+      - master
+      - ci-dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12"
+      - run: npm ci
+
+      - name: Generate deployment package
+        run: zip -r package.zip . -x ".git/*" -x ".github/*" -x ".vscode/*"
+
+      - name: Get timestamp
+        id: timestamp
+        run: echo "::set-output name=date::$(date +'%Y-%m-%dT%H-%M-%S-%3NZ')"
+

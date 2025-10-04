@@ -1,0 +1,14 @@
+amolsr@DESKTOP-DO2TLJF:~$ mkdir .ethereum/
+amolsr@DESKTOP-DO2TLJF:~$ cd .ethereum/
+amolsr@DESKTOP-DO2TLJF:~/.ethereum$ mkdir private/
+amolsr@DESKTOP-DO2TLJF:~/.ethereum$ cd private/
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private$ geth --datadir . init genesis.json
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private$ geth --datadir . --networkid 205112019
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private$ cd keystore/
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private/keystore$ geth --datadir /home/amolsr/.ethereum/private account new
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private/keystore$ ls
+UTC--2019-11-06T12-04-57.490731500Z--f00f28bf3676eceae61216e395bd0c04a18c3c8c
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private/keystore$ cd ..
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private$ geth --datadir . --networkid 205112019
+
+amolsr@DESKTOP-DO2TLJF:~/.ethereum/private$ geth attach ./geth.ipc

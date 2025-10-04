@@ -1,0 +1,19 @@
+name: Angular To gh-pages
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: All things angular
+      uses: AhsanAyaz/angular-deploy-gh-pages-actions@v1.3.1 ## replace by latest version without it you will see Expected format {org}/{repo}[/path]@ref. Actual 'AhsanAyaz/angular-deploy-gh-pages-actions',Input string was not in a correct format.
+      with:
+        github_access_token: ${{ secrets.ACCESS_TOKEN }} # see the Configuration section for how you can create secrets
+        deploy_branch: gh-pages # The branch the action should deploy to.
+        base_href: /College-Management-System/
+        angular_dist_build_folder: dist/mini-project # The folder where your project is supposed to be after running ng build by the action.

@@ -1,0 +1,63 @@
+git clone https://github.com/hyperledger/blockchain-explorer.git
+
+sudo apt-get install postgresql
+sudo passwd postgres
+sudo service postgresql start
+
+cd blockchain-explorer/app
+
+// Modify explorerconfig.json to update PostgreSQL database settings.
+// "postgreSQL": {
+//     "host": "127.0.0.1",
+//     "port": "5432",
+//     "database": "fabricexplorer",
+//     "username": "hppoc",
+//     "passwd": "password"
+// }
+
+cd blockchain-explorer/app/persistence/fabric/postgreSQL/db
+sudo -u postgres ./createdb.sh
+
+cd blockchain-explorer/app
+
+// Modify explorerconfig.json to update Authorization (JWT) settings.
+// "jwt": {
+//     "secret" : "a secret phrase!!",
+//     "expiresIn": "2 days"
+// }
+
+// Setup your own network using the Building Your First Network tutorial from Hyperledger. 
+// Once you setup the network, please modify the values in /blockchain-explorer/app/platform/fabric/config.json accordingly.
+
+cd blockchain-explorer/app/platform/fabric
+
+// Modify config.json to define your fabric network connection profile:
+// {
+//     "network-configs": {
+//         "first-network": {
+//             "name": "firstnetwork",
+//             "profile": "./connection-profile/first-network.json",
+//             "enableAuthentication": false
+//         }
+//     },
+//     "license": "Apache-2.0"
+// }
+
+cd blockchain-explorer
+npm install
+cd blockchain-explorer/app/test
+npm install
+npm run test
+cd client/
+npm install
+npm run test:ci -- -u --coverage
+npm run build
+
+From a new terminal:
+cd blockchain-explorer/
+./start.sh (it will have the backend up).
+./start.sh debug (it will have the backend in debug mode).
+./start.sh print (it will print help).
+Launch the URL http(s)://localhost:8080 on a browser.
+
+https://github.com/hyperledger/blockchain-explorer

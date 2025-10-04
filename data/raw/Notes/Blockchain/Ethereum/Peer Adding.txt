@@ -1,0 +1,16 @@
+geth --identity "YourNodeName" --rpc --rpcport "8092" --datadir "DirectoryPathToStoreData" --port "30330" --nodiscover --rpcapi "db,eth,net,web3" --networkid 2010 init PathOfGenesisFile
+**Note: All Peers that want to connect to a particular network should have the same Genesis File.
+
+geth --identity "YourNodeName" --rpc --rpcport "8092" --datadir "DirectoryPathToStoreData" --port "30330" --nodiscover --rpcapi "db,eth,net,web3" --networkid 2010 console
+
+admin.addPeer("Argument") 
+**where Argument is the enode value of another node which is obtained by typing admin.nodeInfo() in another system.
+
+admin.nodeInfo
+{
+  enode: "enode://965dc2b0f39e199d3a07871293015d8a4ad9349834fc27b7ee5e87bea89547e4fafda3ce7982ae07c14b8770c87a6c14e3fe2f91ef0d0ca717eb6ae56aa3e74b@[::]:30330?discport=0",
+  //////////
+}
+**where 30330 is the network id of another system. Replace [::] with IP address of another system.
+
+> admin.peers

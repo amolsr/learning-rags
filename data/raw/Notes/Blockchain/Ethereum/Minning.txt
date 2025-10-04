@@ -1,0 +1,27 @@
+amolsr@Mercy:/mnt/f/Projects/BlockChain$ ../../Install/Geth/geth.exe --datadir /.ethereum/net220102019 init genesis220102019.json 2>> Genesis.log
+amolsr@Mercy:/mnt/f/Projects/BlockChain$ ../../Install/Geth/geth.exe --datadir /.ethereum/net220102019 --networkid 220102019 console 2>>Eth.log
+Welcome to the Geth JavaScript console!
+
+instance: Geth/v1.9.6-stable-bd059680/windows-amd64/go1.13
+at block: 0 (Thu, 01 Jan 1970 05:30:00 IST)
+ datadir: F:\.ethereum\net220102019
+ modules: admin:1.0 debug:1.0 eth:1.0 ethash:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+> personal.newAccount()
+
+!! Unsupported terminal, password will be echoed.
+Password: *******
+
+Repeat password: *******
+
+"0xccd7415c81b4a1a05eed8a326b856455a0818685"
+> miner.start()
+
+null
+> miner.stop()
+
+null
+> eth.getBalance("0xccd7415c81b4a1a05eed8a326b856455a0818685")
+
+175000000000000000000
+>

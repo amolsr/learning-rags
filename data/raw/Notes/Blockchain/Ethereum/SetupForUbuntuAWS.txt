@@ -1,0 +1,76 @@
+// Running on Ubuntu 16.04 (64-bit)
+
+//command for permission edit in WSL ubuntu
+sudo umount /mnt/c
+sudo mount -t drvfs C: /mnt/c -o metadata
+Or
+sudo vim /etc/wsl.conf
+paste
+[automount]
+enabled = true
+options = "metadata"
+mountFsTab = false
+
+// edit permissions on pem file
+chmod 400 {keyfile}.pem 
+
+// ssh into instance, while exposing remote port for remote VS Code
+ssh -i {path-to-keyfile}.pem -R 52698:localhost:52698 {Username}@{instance-ip}
+
+// Do this first
+sudo add-apt-repository -y ppa:ethereum/ethereum
+sudo apt-get update
+
+// Install Geth
+sudo apt-get install ethereum
+
+// Install Solc
+sudo apt-get install solc
+
+// Install NodeJS
+curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+// Install Remote VS Code
+sudo wget -O /usr/local/bin/rmate https://raw.githubusercontent.com/aurora/rmate/master/rmate && 
+sudo chmod a+x /usr/local/bin/rmate && sudo mv /usr/local/bin/rmate /usr/local/bin/code
+
+// Install tmux
+sudo apt-get install tmux
+
+// Custom tmux configuration
+touch .tmux.conf
+> Add tmux configuration to .tmux.conf file
+> Highly recommend this short tmux book for reference https://pragprog.com/book/bhtmux/tmux
+
+// Install C Development Tools
+sudo apt-get install build-essential
+
+// Install Ganache CLI & truffle
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+export PATH=~/.npm-global/bin:$PATH
+source ~/.profile
+npm install -g ganache-cli
+npm install -g truffle
+
+// Make a new folder
+// Create pacakge.json file
+{
+  "dependencies": {
+    "web3": "0.17.0-alpha"
+  }
+}
+
+// Install dependencies (need to be inside the same folder as package.json)
+npm install
+
+// Run node console (need to be inside the same folder as package.json)
+node
+
+// INSIDE NODE CONSOLE
+var Web3 = require("web3")
+var web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+web3.eth.getAccounts().then(console.log);
+
+// If web3.eth.accounts matches the accounts in your Ganache-CLI, you are good to go
