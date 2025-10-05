@@ -2,7 +2,12 @@
 import contextlib
 import sys
 import os
-from fastapi import FastAPI, HTTPException
+import shutil
+import json
+import threading
+import time
+from datetime import datetime
+from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks
 from pydantic import BaseModel
 import uvicorn
 
@@ -11,6 +16,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from rag_pipeline import create_rag_pipeline
 from config import config
+
+# Global storage for processing status (in production, use a database)
+processing_status = {}
+processing_lock = threading.Lock()
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -50,6 +59,32 @@ app = FastAPI(
 class QuestionRequest(BaseModel):
     text: str
 
+
+class UploadResponse(BaseModel):
+    filename: str
+    original_filename: str
+    file_size: int
+    upload_timestamp: str
+    file_path: str
+    status: str
+    processing_status: str = "pending"
+    document_id: str = ""
+
+class ProcessingStatus(BaseModel):
+    document_id: str
+    filename: str
+    status: str  # pending, processing, completed, failed
+    upload_timestamp: str
+    processing_start_time: str = ""
+    processing_end_time: str = ""
+    error_message: str = ""
+    chunks_created: int = 0
+    documents_indexed: int = 0
+
+class ProcessingStatusResponse(BaseModel):
+    document_id: str
+    status: str
+
 @app.post("/ask")
 def ask_question(request: QuestionRequest):
     """
@@ -65,6 +100,82 @@ def ask_question(request: QuestionRequest):
         return {"question": request.text, "answer": answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing question: {str(e)}")
+
+@app.post("/upload", response_model=UploadResponse)
+async def upload_markdown_file(file: UploadFile = File(...)):
+    """
+    Upload a markdown file to the RAG system.
+
+    Args:
+        file: The markdown file to upload
+
+    Returns:
+        UploadResponse with file details
+
+    Raises:
+        HTTPException: If file validation fails or upload error occurs
+    """
+    # Validate file extension
+    allowed_extensions = {'.md', '.markdown'}
+    file_extension = os.path.splitext(file.filename.lower())[1]
+
+    if file_extension not in allowed_extensions:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid file type. Only markdown files are allowed. Got: {file_extension}"
+        )
+
+    # Validate file size (10MB limit)
+    max_file_size = 10 * 1024 * 1024  # 10MB in bytes
+    file_size = 0
+
+    # Read file content to validate and get size
+    content = await file.read()
+    file_size = len(content)
+
+    if file_size == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Empty file. Please upload a valid markdown file."
+        )
+
+    if file_size > max_file_size:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File too large. Maximum size is 10MB. Got: {file_size / (1024*1024):.2f}MB"
+        )
+
+    # Generate unique filename with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_filename = f"{os.path.splitext(file.filename)[0]}_{timestamp}.md"
+    file_path = os.path.join(config.raw_data_dir, safe_filename)
+
+    try:
+        # Ensure directory exists
+        os.makedirs(config.raw_data_dir, exist_ok=True)
+
+        # Write file to disk
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+
+        print(f"✅ File uploaded successfully: {safe_filename}")
+
+        return UploadResponse(
+            filename=safe_filename,
+            original_filename=file.filename,
+            file_size=file_size,
+            upload_timestamp=datetime.now().isoformat(),
+            file_path=file_path,
+            status="success"
+        )
+
+    except Exception as e:
+        print(f"❌ Error saving file: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save file: {str(e)}"
+        )
+
 
 @app.get("/")
 def read_root():
